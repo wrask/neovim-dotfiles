@@ -56,6 +56,37 @@ use({'folke/tokyonight.nvim',
   end,
 })
 
+-- LSP
+use({
+  'neovim/nvim-lspconfig.nvim',
+  requires = 'hrsh7th/nvim-cmp-lsp',
+  config = function()
+    require('user.plugins.lspconfig')
+  end,
+})
+
+use({
+  'hrsh7th/nvim-cmp',
+  requires = 'hrsh7th/nvim-cmp-lsp',
+  config = function()
+    require('user.plugins.cmp')
+  end,
+})
+
+use({
+  'hrsh7th/nvim-cmp-lsp',
+  config = function()
+    require('user.plugins.lspconfig')
+  end,
+})
+
+use({
+  'onsails/lspkind-nvim',
+  config = function()
+    require('user.plugins.cmp')
+  end,
+})
+
 -- A status line
 use({
   'nvim-lualine/lualine.nvim',

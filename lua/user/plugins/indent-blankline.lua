@@ -25,5 +25,4 @@ require('ibl').setup({
       'NvimTree',
     },
   },
---  show_first_indent_level = true,
 })
