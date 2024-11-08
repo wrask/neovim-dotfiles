@@ -18,6 +18,8 @@ vim.opt.smartcase = true
 
 vim.opt.wrap = false
 
+vim.opt.cursorline = true
+
 vim.opt.list = true -- enable the below listchars
 
 vim.opt.listchars = { tab = '▸ ', trail = '·' }
