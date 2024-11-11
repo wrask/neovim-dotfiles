@@ -6,11 +6,14 @@ require('nvim-treesitter.configs').setup({
   },
   ensure_installed = {
     'javascript',
-    'typescript',
-    'tsx',
     'css',
+    'scss',
     'json',
     'lua',
+    'elixir',
+    'erlang',
+    'html',
+    'php'
   },
   textobjects = {
     select = {
