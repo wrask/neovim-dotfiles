@@ -1,23 +1,50 @@
-local lspconfig = require('lspconfig')
+-- ElixirLS (Neovim 0.11+ core LSP API)
 local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+
 local path_to_elixirls = vim.fn.expand("/Users/romandunik/Desktop/elixir-ls/release/language_server.sh")
 
-lspconfig.elixirls.setup({
-  cmd = {path_to_elixirls},
+-- on_attach must be defined before configuring/enabling servers
+local on_attach = function(_, bufnr)
+  local map = function(mode, lhs, rhs)
+    vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true, buffer = bufnr })
+  end
+
+  map("n", "df", function() vim.lsp.buf.format({ async = true }) end)
+  map("n", "gd", vim.lsp.buf.definition)
+  map("n", "K", vim.lsp.buf.hover)
+  map("n", "gi", vim.lsp.buf.implementation)
+  map("n", "<c-k>", vim.lsp.buf.signature_help)
+  map("n", "1gD", vim.lsp.buf.type_definition)
+  map("n", "gl", vim.diagnostic.open_float)
+end
+
+-- Global defaults for all servers
+vim.lsp.config("*", {
   capabilities = capabilities,
   on_attach = on_attach,
+})
+
+-- Per-server config for ElixirLS
+vim.lsp.config("elixirls", {
+  cmd = { path_to_elixirls },
   settings = {
     elixirLS = {
       dialyzerEnabled = false,
-      fetchDeps = false
-    }
-  }
+      fetchDeps = false,
+    },
+  },
 })
 
+-- Enable server
+vim.lsp.enable("elixirls")
+
+-- nvim-cmp
 local cmp = require("cmp")
+local lspkind = require("lspkind")
 
 cmp.setup({
-  mapping = cmp.mapping.preset.insert {
+  mapping = cmp.mapping.preset.insert({
     ["<Tab>"] = function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
@@ -37,44 +64,16 @@ cmp.setup({
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<Esc>"] = cmp.mapping.close(),
     ["<CR>"] = cmp.mapping.confirm({ select = true }),
-  },
+  }),
   sources = {
     { name = "nvim_lsp" },
   },
   formatting = {
-    format = require("lspkind").cmp_format({
-      with_text = true,
+    format = lspkind.cmp_format({
+      mode = "symbol_text",
       menu = {
         nvim_lsp = "[LSP]",
       },
     }),
   },
 })
-
--- A callback that will get called when a buffer connects to the language server.
--- Here we create any key maps that we want to have on that buffer.
-local on_attach = function(_, bufnr)
-  local function map(...)
-    vim.api.nvim_buf_set_keymap(bufnr, ...)
-  end
-  local map_opts = {noremap = true, silent = true}
-
-  map("n", "df", "<cmd>lua vim.lsp.buf.formatting()<cr>", map_opts)
-  map("n", "gd", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>", map_opts)
-  map("n", "C-LeftMouse", "<cmd>lua vim.lsp.buf.definition()<cr>", map_opts)
-  map("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", map_opts)
-  map("n", "C-LeftMouse", "<cmd>lua vim.lsp.buf.implementation()<cr>", map_opts)
-  map("n", "<c-k>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", map_opts)
-  map("n", "1gD", "<cmd>lua vim.lsp.buf.type_definition()<cr>", map_opts)
-
-  vim.cmd [[inoremap <silent><expr> <C-Space> compe#complete()]]
-  -- vim.cmd [[inoremap <silent><expr> <CR> compe#confirm('<CR>')]]
-  vim.cmd [[inoremap <silent><expr> <C-e> compe#close('<C-e>')]]
-  vim.cmd [[inoremap <silent><expr> <C-f> compe#scroll({ 'delta': +4 })]]
-  vim.cmd [[inoremap <silent><expr> <C-d> compe#scroll({ 'delta': -4 })]]
-
-  -- tell nvim-cmp about our desired capabilities
-  require("cmp_nvim_lsp").default_capabilities(capabilities)
-end
-
-
