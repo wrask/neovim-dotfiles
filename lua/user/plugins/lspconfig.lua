@@ -2,7 +2,7 @@
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
-local path_to_elixirls = vim.fn.expand("/Users/romandunik/Desktop/elixir-ls/release/language_server.sh")
+local path_to_elixirls = vim.fn.expand("/Users/wsa-193-41b/Desktop/elixir-ls/language_server.sh")
 
 -- on_attach must be defined before configuring/enabling servers
 local on_attach = function(_, bufnr)
@@ -30,7 +30,7 @@ vim.lsp.config("elixirls", {
   cmd = { path_to_elixirls },
   settings = {
     elixirLS = {
-      dialyzerEnabled = false,
+      dialyzerEnabled = true,
       fetchDeps = false,
     },
   },
